@@ -38,7 +38,7 @@ export default function WhyChooseUs() {
               {/* Card Image */}
               <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-white mb-6 shadow-xs">
                 <Image
-                  src="/image/services/faucet-sink-installation.png"
+                  src="/image/services/faucet-sink-installation.webp"
                   alt="Polite and professional installation work"
                   fill
                   sizes="(max-width: 1024px) 100vw, 33vw"

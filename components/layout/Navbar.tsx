@@ -20,7 +20,7 @@ export default function Navbar() {
           aria-label="MOS Quick Services - home"
         >
           <Image
-            src="/image/logo.png"
+            src="/image/logo.webp"
             alt="MOS Quick Services logo"
             width={160}
             height={50}

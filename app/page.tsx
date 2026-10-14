@@ -3,6 +3,7 @@ import InstallationServices from "@/components/home/InstallationServices";
 import ServicesSection from "@/components/home/ServicesSection";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
 import AboutUs from "@/components/home/AboutUs";
+import ContactSection from "@/components/home/ContactSection";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <ServicesSection />
       <WhyChooseUs />
       <AboutUs />
+      <ContactSection />
     </>
   );
 }
