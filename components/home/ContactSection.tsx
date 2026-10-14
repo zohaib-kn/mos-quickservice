@@ -82,7 +82,7 @@ export default function ContactSection() {
                   </div>
                 </div>
 
-                {/* Service Area */}
+                {/* Service Availability */}
                 <div className="flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-[#38BDF8]">
                     <svg
@@ -96,16 +96,16 @@ export default function ContactSection() {
                       strokeLinejoin="round"
                       aria-hidden="true"
                     >
-                      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                      <circle cx="12" cy="10" r="3" />
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
                     </svg>
                   </div>
                   <div>
                     <span className="block text-xs font-semibold uppercase tracking-wider text-white/60 mb-1">
-                      Service Area
+                      Service Availability
                     </span>
                     <span className="text-base sm:text-lg font-semibold text-white">
-                      Greater Toronto Area (GTA)
+                      Same-Day &amp; Flexible Scheduling
                     </span>
                   </div>
                 </div>

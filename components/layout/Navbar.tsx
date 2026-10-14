@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import MobileNav from "@/components/layout/MobileNav";
@@ -10,9 +13,27 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#0B1F3A]/10 bg-white/90 backdrop-blur-md supports-[backdrop-filter]:bg-white/80">
-      <div className="mx-auto grid h-[76px] max-w-[1280px] grid-cols-[auto_1fr] items-center gap-6 px-4 sm:px-6 md:grid-cols-[1fr_auto_1fr] lg:px-8">
+    <header
+      className={`fixed top-0 inset-x-0 z-50 w-full transition-all duration-300 ease-in-out ${
+        isScrolled
+          ? "border-b border-[#0B1F3A]/10 bg-white/90 backdrop-blur-md shadow-xs supports-[backdrop-filter]:bg-white/80"
+          : "border-b border-white/20 bg-white/35 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.06)] supports-[backdrop-filter]:bg-white/25"
+      }`}
+    >
+      <div className="mx-auto grid h-[68px] md:h-[76px] max-w-[1280px] grid-cols-[auto_1fr] items-center gap-4 sm:gap-6 px-4 sm:px-6 md:grid-cols-[1fr_auto_1fr] lg:px-8">
         {/* Logo */}
         <Link
           href="/"
@@ -25,7 +46,7 @@ export default function Navbar() {
             width={160}
             height={50}
             priority
-            className="h-11 w-auto"
+            className="h-9 md:h-11 w-auto"
           />
         </Link>
 
@@ -38,7 +59,11 @@ export default function Navbar() {
             <Link
               key={link.label}
               href={link.href}
-              className="relative py-2 text-[15px] font-medium text-[#151A23] transition-colors duration-200 after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-[#0755C8] after:transition-transform after:duration-300 hover:text-[#0755C8] hover:after:scale-x-100 focus-visible:outline-none focus-visible:text-[#0755C8] focus-visible:after:scale-x-100 motion-reduce:transition-none motion-reduce:after:transition-none"
+              className={`relative py-2 text-[15px] font-semibold transition-colors duration-200 after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:transition-transform after:duration-300 focus-visible:outline-none motion-reduce:transition-none motion-reduce:after:transition-none ${
+                isScrolled
+                  ? "text-[#151A23] hover:text-[#0755C8] after:bg-[#0755C8] focus-visible:text-[#0755C8] focus-visible:after:scale-x-100"
+                  : "text-white hover:text-[#38BDF8] after:bg-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] focus-visible:text-[#38BDF8] focus-visible:after:scale-x-100"
+              }`}
             >
               {link.label}
             </Link>
@@ -50,7 +75,7 @@ export default function Navbar() {
           <a
             href="tel:6474072525"
             id="navbar-call-cta"
-            className="hidden items-center gap-3 whitespace-nowrap rounded-full bg-[#0755C8] py-1.5 pl-1.5 pr-6 text-white transition-colors duration-200 hover:bg-[#0B1F3A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0755C8] focus-visible:ring-offset-2 motion-reduce:transition-none md:inline-flex"
+            className="hidden items-center gap-3 whitespace-nowrap rounded-full bg-[#0755C8] py-1.5 pl-1.5 pr-6 text-white transition-colors duration-200 hover:bg-[#0B1F3A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0755C8] focus-visible:ring-offset-2 motion-reduce:transition-none md:inline-flex shadow-xs"
           >
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
               <svg
@@ -75,7 +100,7 @@ export default function Navbar() {
             </span>
           </a>
 
-          <MobileNav navLinks={navLinks} />
+          <MobileNav navLinks={navLinks} isScrolled={isScrolled} />
         </div>
       </div>
     </header>
