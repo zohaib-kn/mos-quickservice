@@ -60,7 +60,15 @@ const INSTALLATION_SERVICES: InstallationService[] = [
   },
 ];
 
-function ServiceCard({ service }: { service: InstallationService }) {
+function ServiceCard({
+  service,
+  isActiveOnMobile,
+  onToggleMobile,
+}: {
+  service: InstallationService;
+  isActiveOnMobile: boolean;
+  onToggleMobile: () => void;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -87,6 +95,10 @@ function ServiceCard({ service }: { service: InstallationService }) {
     };
   }, []);
 
+  // Active condition: hover on desktop or tap-active on mobile
+  const isPlaying =
+    !reducedMotion && ((canHover && isHovered) || (!canHover && isActiveOnMobile));
+
   const handleActivate = () => {
     if (!canHover || reducedMotion) return;
     setIsHovered(true);
@@ -99,7 +111,22 @@ function ServiceCard({ service }: { service: InstallationService }) {
   };
 
   const handleDeactivate = () => {
+    if (!canHover) return;
     setIsHovered(false);
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    // On mobile touch devices, tap toggles playback rather than jumping anchors
+    if (!canHover) {
+      e.preventDefault();
+      if (!isActiveOnMobile) {
+        if (!hasLoaded) setHasLoaded(true);
+        if (videoRef.current && service.videoSrc) {
+          videoRef.current.play().catch(() => {});
+        }
+      }
+      onToggleMobile();
+    }
   };
 
   // Video playback management
@@ -107,7 +134,8 @@ function ServiceCard({ service }: { service: InstallationService }) {
     const video = videoRef.current;
     if (!video || !service.videoSrc) return;
 
-    if (isHovered && hasLoaded && canHover && !reducedMotion) {
+    if (isPlaying) {
+      if (!hasLoaded) setHasLoaded(true);
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
@@ -117,13 +145,13 @@ function ServiceCard({ service }: { service: InstallationService }) {
     } else {
       video.pause();
     }
-  }, [isHovered, hasLoaded, canHover, reducedMotion, service.videoSrc]);
+  }, [isPlaying, hasLoaded, service.videoSrc]);
 
-  // Image slideshow management (faster 800ms cycle for responsive feel)
+  // Image slideshow management (800ms cycle for responsive feel)
   useEffect(() => {
     if (!service.galleryImages || service.galleryImages.length <= 1) return;
 
-    if (isHovered && canHover && !reducedMotion) {
+    if (isPlaying) {
       const timer = setInterval(() => {
         setActiveSlide((prev) => (prev + 1) % service.galleryImages!.length);
       }, 800);
@@ -132,7 +160,7 @@ function ServiceCard({ service }: { service: InstallationService }) {
     } else {
       setActiveSlide(0);
     }
-  }, [isHovered, canHover, reducedMotion, service.galleryImages]);
+  }, [isPlaying, service.galleryImages]);
 
   const hasGallery = service.galleryImages && service.galleryImages.length > 1;
 
@@ -140,6 +168,7 @@ function ServiceCard({ service }: { service: InstallationService }) {
     <li className="flex">
       <Link
         href={service.href}
+        onClick={handleClick}
         onPointerEnter={handleActivate}
         onPointerLeave={handleDeactivate}
         onFocus={handleActivate}
@@ -187,7 +216,6 @@ function ServiceCard({ service }: { service: InstallationService }) {
               className="object-cover object-center transition-transform duration-300 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             />
           )}
-
           {/* Video layer with snappy 180ms fade-in */}
           {service.videoSrc && (
             <video
@@ -200,9 +228,7 @@ function ServiceCard({ service }: { service: InstallationService }) {
               aria-hidden="true"
               tabIndex={-1}
               className={`pointer-events-none absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-200 ease-out ${
-                isHovered && canHover && !reducedMotion
-                  ? "opacity-100"
-                  : "opacity-0"
+                isPlaying ? "opacity-100" : "opacity-0"
               }`}
             />
           )}
@@ -223,6 +249,12 @@ function ServiceCard({ service }: { service: InstallationService }) {
 }
 
 export default function InstallationServices() {
+  const [activeMobileId, setActiveMobileId] = useState<string | null>(null);
+
+  const handleToggleMobile = (id: string) => {
+    setActiveMobileId((prev) => (prev === id ? null : id));
+  };
+
   return (
     <section
       id="installations"
@@ -262,7 +294,12 @@ export default function InstallationServices() {
         {/* Cards */}
         <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-7">
           {INSTALLATION_SERVICES.map((service) => (
-            <ServiceCard key={service.id} service={service} />
+            <ServiceCard
+              key={service.id}
+              service={service}
+              isActiveOnMobile={activeMobileId === service.id}
+              onToggleMobile={() => handleToggleMobile(service.id)}
+            />
           ))}
         </ul>
       </div>
